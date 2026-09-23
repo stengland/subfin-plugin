@@ -18,20 +18,23 @@ public static class Crypto
 
     private static byte[]? _cachedKey;
 
-    public static void SetSalt(string base64Salt)
+    public static void SetSalt(string salt)
     {
-        _cachedKey = null; // reset so next call re-derives
-        _GetKey(base64Salt); // pre-warm
+      var newKey = Rfc2898DeriveBytes.Pbkdf2(
+          Convert.FromBase64String(salt),
+          Encoding.UTF8.GetBytes(KdfSalt),
+          100_000, HashAlgorithmName.SHA256, 32);
+
+      Volatile.Write(ref _cachedKey, newKey);
     }
 
-    private static byte[] _GetKey(string base64Salt)
+    private static byte[] _GetKey(string salt)
     {
-        if (_cachedKey != null) return _cachedKey;
-        var saltBytes = Encoding.UTF8.GetBytes(KdfSalt);
-        var password = Convert.FromBase64String(base64Salt);
-        using var deriv = new Rfc2898DeriveBytes(password, saltBytes, 100_000, HashAlgorithmName.SHA256);
-        _cachedKey = deriv.GetBytes(KeyLen);
-        return _cachedKey;
+      var key = Volatile.Read(ref _cachedKey);
+      if (key != null) return key;
+
+      SetSalt(salt);
+      return Volatile.Read(ref _cachedKey)!;
     }
 
     public static byte[] Encrypt(string plaintext, string salt)
