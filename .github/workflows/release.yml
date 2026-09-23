@@ -64,7 +64,7 @@ jobs:
           OWNER=$(jq -r '.owner' meta.json)
           CATEGORY=$(jq -r '.category' meta.json)
           CHANGELOG="${{ steps.changelog.outputs.CHANGELOG }}"
-          IMAGE_URL="https://raw.githubusercontent.com/williamkray/subfin-plugin/main/logo.png"
+          IMAGE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY_OWNER}/subfin-plugin/main/logo.png"
 
           # Write meta.json for the ZIP
           jq -n \
@@ -129,7 +129,7 @@ jobs:
           TIMESTAMP="${{ steps.package.outputs.TIMESTAMP }}"
           CHANGELOG="${{ steps.changelog.outputs.CHANGELOG }}"
           ZIP_NAME="${{ steps.package.outputs.ZIP_NAME }}"
-          IMAGE_URL="https://raw.githubusercontent.com/williamkray/subfin-plugin/main/logo.png"
+          IMAGE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY_OWNER}/subfin-plugin/main/logo.png"
 
           # Read static fields from meta.json
           GUID=$(jq -r '.guid' meta.json)
@@ -138,7 +138,7 @@ jobs:
           OVERVIEW=$(jq -r '.overview' meta.json)
           OWNER=$(jq -r '.owner' meta.json)
           CATEGORY=$(jq -r '.category' meta.json)
-          SOURCE_URL="https://github.com/williamkray/subfin-plugin/releases/download/v${VERSION}/${ZIP_NAME}"
+          SOURCE_URL="https://github.com/${GITHUB_REPOSITORY_OWNER}/subfin-plugin/releases/download/v${VERSION}/${ZIP_NAME}"
 
           NEW_ENTRY=$(jq -n \
             --arg checksum "$CHECKSUM" \
